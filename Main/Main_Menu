@@ -1,0 +1,200 @@
+import sys
+from os import system
+from monitoring import *
+
+def main_menu():
+    """
+    This function starts the Program, shows the user all options to show each module.
+    Lists all modules and files, alongside how to get to each function
+    Variables:
+        menu_list, menu_items, function_names: all values in RM module to find chosen variables from user
+        SelectedValue, selection: find selection and use number to go to each function
+    Returns:
+        Function(Chosen by user)
+    
+    """
+
+    
+    menu_format = ["R - Access the PR model", "I - Access the MI module", "M - Access the RM module", "A - Print the About text", "Q - Quit the application"]
+    functions_names = [reporting_menu, intelligence_menu, monitoring_menu, about, quit]
+    menu_items = dict(enumerate(functions_names, start=1)) # list of all menu items as dictionary
+    menu_list= dict(enumerate(menu_format, start=1))
+    SelectedValue = 0 # selected value to find function
+    while True:
+        print("                                                       ")
+        print("*************************************************************************")
+        for i in menu_format:
+            print([i]) # print all functions
+
+        print("*************************************************************************")
+        print("                                                       ")
+        selection = input("Please enter key for the screen you want to go to")  # Get function key
+        # check for selection and whether user has selected correct key on keyboard
+        if selection == "R" or selection == "r":
+            SelectedValue = 1
+        elif selection == "I" or selection == "i":
+            SelectedValue = 2
+        elif selection == "M" or selection == "m":
+            SelectedValue = 3
+        elif selection == "A" or selection == "a":
+            SelectedValue = 4
+        elif selection == "Q" or selection == "q":
+            SelectedValue = 5    
+        else:
+            raise Exception("Error when finding value") # if user has chosen incorrect value, exception is raised
+        
+        selected_value = menu_items[SelectedValue]  # Gets the function name
+        selected_value()  # call the function
+        
+
+
+    """
+    If this function is called, by pressing R in the main menu, the user can choose between 
+    different options to perform tasks for the Reporting module.
+    Will return back to Main Menu
+    Variables:
+        StationNeede/DateSelected/FunctionNeeded: all values in RM module to find chosen variables from user
+    Returns:
+        Function(Chosen by user)
+    
+    
+    """
+    system('cls')  # clears screen
+    print("You have selected the Reporting section\n") 
+    
+    Options = [daily_average, daily_median, hourly_average, monthly_average, peak_hour_date, count_missing_data, fill_missing_data]
+    # list all options to user
+    print("Options: ")
+    for i in range(len(Options)):
+        print(i, Options[i].__name__)
+    FunctionNeeded = int(input("Pick which function you want"))  
+    # if 7th function is chosen, user can swap missing data with new data
+    if FunctionNeeded == 6:
+        ReplacementValue = input("What do you want as new value for missing data")
+    if FunctionNeeded == 4: # User can choose specific date if they selected 5th function
+        DateSelected = input("What date do you want")
+    for i in range(len(Pollutants)): # find pollutant that user wants to search through
+        print("Pollutants: \n" , i, Pollutants[i])
+    PollutantNeeded = int(input("What Pollutant you want"))
+
+
+    for i in range(len(Stations)): # find station for data to be searched in 
+        print("Stations: \n",i, Stations[i])
+    StationNeeded = int(input("What station do you want"))
+
+    if FunctionNeeded == 4:
+        print(peak_hour_date("", DateSelected,Stations[StationNeeded] , Pollutants[PollutantNeeded] ))
+
+    elif FunctionNeeded == 6:
+        print(fill_missing_data("", ReplacementValue,Stations[StationNeeded] , Pollutants[PollutantNeeded]))
+
+    else:
+        print(Options[FunctionNeeded]("", Stations[StationNeeded], Pollutants[PollutantNeeded]))
+    # apart from other 2 functions, all functions can use the same parameters
+
+
+    input("Press Enter key to continue\n")
+    system('cls')  # clears screen and return to main menu
+
+
+def monitoring_menu():
+    """
+    If this function is called, by pressing M in the main menu, the user can choose between 
+    different options to perform tasks for the RM module.
+    Will return back to Main Menu
+    Variables:
+        SpeciesNeeded/SiteNeeded/FunctionNeeded: all values in RM module to find chosen variables from user
+    Returns:
+        Function(Chosen by user)
+    
+    
+    """
+    system('cls')  # clears screen
+    print("You have selected the Monitoring section\n") 
+    Options = [average_all_values, median_of_values, bar_chart_of_values, range_of_values_week, selected_days]
+    # lists all options of functions inside RM file
+    print("Options: ") # print options
+    for i in range(len(Options)):
+        print(i, Options[i].__name__) # print each function and number corrosponding to function
+    FunctionNeeded = int(input("Pick which function you want"))
+    print("Sites: \n")
+    for i in range(len(ListOfSites)):
+        print(i, ListOfSites[i]) # find site user wants
+    SiteNeeded = int(input("What Site do you want"))
+    print("Species: \n" ) # find species user wants
+    for i in range(len(ListOfSpecies)):
+        print(i, ListOfSpecies[i])
+    SpeciesNeeded = int(input("What Species do you want"))
+    
+    # look at each function the user has chosen and print with the specific site and species listed
+    if FunctionNeeded == 0:
+        print(average_all_values(ListOfSites[SiteNeeded], ListOfSpecies[SpeciesNeeded]))
+    if FunctionNeeded == 1:
+        print(median_of_values(ListOfSites[SiteNeeded], ListOfSpecies[SpeciesNeeded]))
+    if FunctionNeeded == 2:
+        print(bar_chart_of_values(ListOfSites[SiteNeeded], ListOfSpecies[SpeciesNeeded]))
+    if FunctionNeeded == 3:
+        print(range_of_values_week(ListOfSites[SiteNeeded], ListOfSpecies[SpeciesNeeded]))
+
+    if FunctionNeeded == 4: # is the user chosen range of values-week, then they can choose 2 specific days
+        StartDate = input("Please enter date of start in format (YYYY-MM-DD)")
+        EndDate = input("Please enter date of end in format (YYYY-MM-DD)")
+        assert len(StartDate) == 10 # make sure startDate has 10 characters
+
+        print(selected_days(ListOfSites[SiteNeeded], ListOfSpecies[SpeciesNeeded], StartDate, EndDate))
+
+
+
+    """
+    If this function is called, by pressing I in the main menu, the user can choose between 
+    different options to perform tasks for the intellegence module.
+    Will return back to Main Menu
+    Variables:
+        FunctionNeeded: all values in Intellegence module to find chosen variables from user
+    Returns:
+        Function(Chosen by user)
+    
+    """
+    system('cls')  # clears screen
+    print("You have selected the Intellegence section\n") 
+
+    Options = [find_red_pixels, find_cyan_pixels]
+    # list all options to user
+    print("Options: ")
+    for i in range(len(Options)):
+        print(i, Options[i].__name__)
+
+    FunctionNeeded = int(input("Pick which function you want"))  
+    # if function is chosen, user can see map of functions given
+    if FunctionNeeded == 0:
+        print(find_red_pixels("./data/map.png"))
+    if FunctionNeeded == 1:
+        print(find_cyan_pixels("./data/map.png"))
+
+
+
+def about():
+    """
+    If this function has been called
+    It will print out module code and candidate number and will return to main menu
+    """
+    system('cls')  # clears screen
+    print("You have selected the ABOUT section\n") 
+    print ("ECM1400", "241275\n")
+    input("Press Enter key to continue\n")
+    system('cls')  # clears screen and return to main menu
+
+def quit():
+    """
+    if this function is called, 
+    Menu and program should be terminated
+    """
+    
+    system('cls')  # clears screen
+    sys.exit() # terminate program
+    
+
+
+
+if __name__ == '__main__':
+    main_menu()
